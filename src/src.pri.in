@@ -29,3 +29,9 @@ unix:!macx {
 		QT += x11extras
 	}
 }
+
+# QtCharts support
+QCHARTS = @ac_qcharts@
+!isEmpty(QCHARTS) {
+	QT += charts
+}

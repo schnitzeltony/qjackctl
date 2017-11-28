@@ -138,6 +138,12 @@ AC_ARG_ENABLE(dbus,
   [ac_dbus="$enableval"],
   [ac_dbus="yes"])
 
+# Enable QtCharts support option.
+AC_ARG_ENABLE(qt_charts,
+  AC_HELP_STRING([--enable-qt-charts], [enable QtCharts support (default=no)]),
+  [ac_qt_charts="$enableval"],
+  [ac_qt_charts="no"])
+
 # Enable X11 unique/single instance.
 AC_ARG_ENABLE(xunique,
   AC_HELP_STRING([--enable-xunique], [enable X11 unique/single instance (default=yes)]),
@@ -493,6 +499,24 @@ if test "x$ac_dbus" = "xyes"; then
 fi
 AC_SUBST(ac_qdbus)
 
+# Check for QtCharts support.
+if test "x$ac_qt_charts" = "xyes"; then
+   if test "x$ac_qt4" = "xno"; then
+      PKG_CHECK_MODULES([QT5CHARTS], [Qt5Charts], [ac_qt_charts="yes"], [ac_qt_charts="no"])
+      if test "x$ac_qt_charts" = "xyes"; then
+         AC_DEFINE(CONFIG_QT5CHARTS, 1, [Define if QtCharts library is available.])
+         ac_qcharts="charts"
+      else
+         AC_MSG_WARN([*** QtCharts library not found.])
+      fi
+   else
+      # QtCharts came in with Qt5
+      AC_MSG_WARN([*** QtCharts is not supported for Qt4.])
+      ac_qt_charts="no"
+   fi
+fi
+AC_SUBST(ac_qcharts)
+
 # Check for X11 unique/single instance.
 if test "x$ac_xunique" = "xyes" -a "x$ac_qt4" = "xno"; then
    PKG_CHECK_MODULES([QT5X11EXTRAS], [Qt5X11Extras], [ac_xunique="yes"], [ac_xunique="no"])
@@ -609,6 +633,7 @@ echo "  D-Bus interface support  . . . . . . . . . . . . .: $ac_dbus"
 echo "  PortAudio interface support  . . . . . . . . . . .: $ac_portaudio"
 echo "  CoreAudio interface support  . . . . . . . . . . .: $ac_coreaudio"
 echo
+echo "  QtCharts support . . . . . . . . . . . . . . . . .: $ac_qt_charts"
 echo "  X11 Unique/Single instance . . . . . . . . . . . .: $ac_xunique"
 echo "  Debugger stack-trace (gdb) . . . . . . . . . . . .: $ac_stacktrace"
 echo
