@@ -29,3 +29,9 @@ unix:!macx {
 		QT += x11extras
 	}
 }
+
+# QtCharts support
+QCHARTSLIB = @ac_charts_lib@
+equals(QCHARTSLIB, "qwt") {
+	CONFIG += qwt
+}

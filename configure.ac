@@ -138,6 +138,12 @@ AC_ARG_ENABLE(dbus,
   [ac_dbus="$enableval"],
   [ac_dbus="yes"])
 
+# Enable Qwt support option.
+AC_ARG_ENABLE(qwt,
+  AC_HELP_STRING([--enable-qwt], [enable qwt support (default=no)]),
+  [ac_qwt="$enableval"],
+  [ac_qwt="no"])
+
 # Enable X11 unique/single instance.
 AC_ARG_ENABLE(xunique,
   AC_HELP_STRING([--enable-xunique], [enable X11 unique/single instance (default=yes)]),
@@ -493,6 +499,22 @@ if test "x$ac_dbus" = "xyes"; then
 fi
 AC_SUBST(ac_qdbus)
 
+# Check for qwt support.
+if test "x$ac_qwt" = "xyes"; then
+   if test "x$ac_qt4" = "xno"; then
+      PKG_CHECK_MODULES([QWT], [Qt5Qwt6], [ac_qwt="yes"], [ac_qwt="no"])
+   else
+      PKG_CHECK_MODULES([QWT], [qwt], [ac_qwt="yes"], [ac_qwt="no"])
+   fi
+   if test "x$ac_qwt" = "xyes"; then
+      AC_DEFINE(CONFIG_QWT, 1, [Define if qwt library is available.])
+      ac_charts_lib="qwt"
+   else
+      AC_MSG_WARN([*** Qwt library not found.])
+   fi
+fi
+AC_SUBST(ac_charts_lib)
+
 # Check for X11 unique/single instance.
 if test "x$ac_xunique" = "xyes" -a "x$ac_qt4" = "xno"; then
    PKG_CHECK_MODULES([QT5X11EXTRAS], [Qt5X11Extras], [ac_xunique="yes"], [ac_xunique="no"])
@@ -609,6 +631,7 @@ echo "  D-Bus interface support  . . . . . . . . . . . . .: $ac_dbus"
 echo "  PortAudio interface support  . . . . . . . . . . .: $ac_portaudio"
 echo "  CoreAudio interface support  . . . . . . . . . . .: $ac_coreaudio"
 echo
+echo "  Qwt support  . . . . . . . . . . . . . . . . . . .: $ac_qwt"
 echo "  X11 Unique/Single instance . . . . . . . . . . . .: $ac_xunique"
 echo "  Debugger stack-trace (gdb) . . . . . . . . . . . .: $ac_stacktrace"
 echo
